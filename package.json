@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Interactive, client-side visualizer and educational sandbox for Syncthing .stignore patterns",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

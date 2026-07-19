@@ -28,7 +28,6 @@ No known bugs.
 
 ## Unfinished / not started
 
-- No LICENSE file yet (owner's choice needed before publishing).
 - Export features (SVG/PNG/JSON), rule statistics, shareable URLs — designed but not built
   (docs/FutureIdeas.md).
 - No row virtualization for very large trees (>10k nodes) — auto-collapse mitigates.
@@ -41,12 +40,11 @@ None known. Watch-outs: see "Known pitfalls" in CLAUDE.md.
 
 ## Recommended next steps
 
-1. `git` history exists locally only — push to a remote if wanted; add LICENSE.
-2. Real `.stignore` file import (drop onto editor) — small win, high value.
-3. Rule statistics panel (matched/decided/shadowed counts per rule) — engine already
+1. Real `.stignore` file import (drop onto editor) — small win, high value.
+2. Rule statistics panel (matched/decided/shadowed counts per rule) — engine already
    collects the data in `EvaluationStep`.
-4. SVG/PNG export.
-5. Consider a CI workflow (npm ci && npm test && npm run build).
+3. SVG/PNG export.
+4. Consider a CI workflow (npm ci && npm test && npm run build).
 
 ## Files modified this session
 

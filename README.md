@@ -98,4 +98,4 @@ deviations and ambiguities are documented in
 
 ## License
 
-MPL-2.0-style openness intended; add a LICENSE file before publishing publicly.
+GPL-3.0-or-later — see [LICENSE](LICENSE).

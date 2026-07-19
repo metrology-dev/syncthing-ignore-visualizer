@@ -6,10 +6,9 @@ Statuses: `todo` | `in-progress` | `done` | `blocked`
 
 | Task | Status | Depends on | Notes |
 |---|---|---|---|
-| Add LICENSE file | blocked | owner decision | README references open-source intent; pick MPL-2.0/MIT |
 | Import a real `.stignore` file into the editor | todo | — | drop/pick straight into editor tab; parser unchanged |
 | Rule statistics (matched/decided/shadowed per rule) | todo | — | data already in `EvaluationStep`; add panel section + dead-rule hint |
-| CI workflow (test + build) | todo | remote repo | GitHub Actions: npm ci, test, build |
+| CI workflow (test + build) | todo | — | GitHub Actions: npm ci, test, build |
 
 ## P2 — medium
 
