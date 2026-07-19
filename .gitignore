@@ -4,3 +4,4 @@ dist-standalone/
 coverage/
 *.log
 .DS_Store
+.claude/
