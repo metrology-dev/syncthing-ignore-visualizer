@@ -23,6 +23,12 @@ included or ignored, and inspect the complete evaluation history of any file.
 
 ## Quick start
 
+**Just want to use it?** Grab `syncthing-ignore-visualizer-standalone.html` from the
+[latest release](https://github.com/metrology-dev/syncthing-ignore-visualizer/releases/latest)
+and double-click it — it's a single self-contained file, no install, no server, works offline.
+
+To run from source:
+
 ```bash
 npm install
 npm run dev        # development server with hot reload
@@ -34,14 +40,16 @@ every rule type.
 ## Build & test
 
 ```bash
-npm run build      # type-check + production bundle in dist/
-npm run preview    # serve the production build
-npm test           # run the full unit + integration test suite (Vitest)
-npm run coverage   # test coverage for the core engine
+npm run build             # type-check + production bundle in dist/ (separate JS/CSS chunks)
+npm run build:standalone  # single self-contained dist-standalone/index.html (no server needed)
+npm run preview           # serve the production build
+npm test                  # run the full unit + integration test suite (Vitest)
+npm run coverage          # test coverage for the core engine
 ```
 
 The built `dist/` folder is fully static — host it anywhere (or open via any static server).
-No backend, no runtime dependencies.
+`dist-standalone/index.html` inlines everything into one file, so it also opens directly via
+`file://`. No backend, no runtime dependencies either way.
 
 ## Using the app
 
