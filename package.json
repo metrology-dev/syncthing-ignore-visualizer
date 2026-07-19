@@ -1,0 +1,22 @@
+{
+  "name": "syncthing-ignore-visualizer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Interactive, client-side visualizer and educational sandbox for Syncthing .stignore patterns",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.1.1",
+    "typescript": "^5.8.2",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.1"
+  }
+}

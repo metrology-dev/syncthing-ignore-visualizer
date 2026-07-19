@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive visualizer and educational sandbox for Syncthing .stignore patterns"
+    />
+    <title>Syncthing Ignore Pattern Visualizer</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%235d5591' stroke-width='2'/%3E%3Ccircle cx='12' cy='7' r='2' fill='%235d5591'/%3E%3Ccircle cx='7.5' cy='15.5' r='2' fill='%235d5591'/%3E%3Ccircle cx='16.5' cy='15.5' r='2' fill='%235d5591'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/layout.css" />
+    <link rel="stylesheet" href="/styles/components.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="app-title">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" class="app-logo">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle cx="12" cy="7" r="2" fill="currentColor" />
+          <circle cx="7.5" cy="15.5" r="2" fill="currentColor" />
+          <circle cx="16.5" cy="15.5" r="2" fill="currentColor" />
+          <path d="M12 9v2.5m-2.6 2.4L12 11.5m2.6 2.4L12 11.5" stroke="currentColor" stroke-width="1.6" fill="none" />
+        </svg>
+        <h1>Syncthing Ignore Pattern Visualizer</h1>
+      </div>
+      <div class="header-controls">
+        <label class="control">
+          <span>Platform</span>
+          <select id="platform-select" title="Controls case sensitivity and the escape character">
+            <option value="linux" selected>Linux (case-sensitive, \ escapes)</option>
+            <option value="macos">macOS (case-insensitive, \ escapes)</option>
+            <option value="windows">Windows (case-insensitive, | escapes)</option>
+          </select>
+        </label>
+        <button id="import-button" class="btn" type="button">Import tree…</button>
+        <button id="example-button" class="btn" type="button" title="Restore the built-in demo tree and rules">
+          Load example
+        </button>
+        <button id="theme-toggle" class="btn icon-btn" type="button" aria-label="Toggle dark / light theme">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path
+              class="theme-icon"
+              d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel" id="tree-panel" aria-label="Folder tree">
+        <div class="panel-header">
+          <h2>Folder Tree</h2>
+          <div class="panel-tools">
+            <input
+              id="search-input"
+              class="search-input"
+              type="search"
+              placeholder="Search files, folders, rules…  ( / )"
+              aria-label="Search files, folders and rules"
+            />
+            <div class="zoom-controls" role="group" aria-label="Zoom">
+              <button id="zoom-out" class="btn icon-btn" type="button" aria-label="Zoom out">−</button>
+              <button id="zoom-reset" class="btn icon-btn" type="button" aria-label="Reset zoom">1:1</button>
+              <button id="zoom-fit" class="btn icon-btn" type="button" aria-label="Fit to panel">Fit</button>
+              <button id="zoom-in" class="btn icon-btn" type="button" aria-label="Zoom in">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="tree-container" id="tree-container" tabindex="0">
+          <svg id="tree-svg" role="tree" aria-label="Folder hierarchy"></svg>
+        </div>
+        <div class="legend" id="legend" aria-label="Legend">
+          <span class="legend-item"><span class="swatch swatch-included"></span>Included</span>
+          <span class="legend-item"><span class="swatch swatch-ignored"></span>Ignored</span>
+          <span class="legend-item"><span class="swatch swatch-matched"></span>Matched by current rule</span>
+          <span class="legend-item"><span class="swatch swatch-neutral"></span>Unaffected this step</span>
+          <span class="legend-note">First matching rule wins</span>
+        </div>
+      </section>
+
+      <section class="panel" id="editor-panel" aria-label="Ignore pattern editor">
+        <div class="panel-header">
+          <h2>.stignore</h2>
+          <div class="file-tabs" id="file-tabs" role="tablist" aria-label="Ignore files"></div>
+        </div>
+        <div class="editor-host" id="editor-host"></div>
+        <div class="diagnostics" id="diagnostics" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" id="explain-panel" aria-label="Explanation">
+        <div class="panel-header">
+          <h2>Explanation</h2>
+          <div class="explain-tabs" role="tablist" aria-label="Explanation views">
+            <button id="tab-step" class="tab active" role="tab" aria-selected="true" type="button">
+              Current step
+            </button>
+            <button id="tab-file" class="tab" role="tab" aria-selected="false" type="button">
+              File details
+            </button>
+          </div>
+        </div>
+        <div class="explain-content" id="explain-content" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="timeline-bar" id="timeline-panel" aria-label="Evaluation timeline">
+      <div class="timeline-buttons" role="group" aria-label="Playback controls">
+        <button id="tl-reset" class="btn icon-btn" type="button" aria-label="Reset to initial state" title="Reset (Home)">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 5h2v14H6zm12 .8v12.4L9.5 12z" fill="currentColor"/></svg>
+        </button>
+        <button id="tl-prev" class="btn icon-btn" type="button" aria-label="Previous rule" title="Previous (←)">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15.5 5.8v12.4L7 12z" fill="currentColor"/></svg>
+        </button>
+        <button id="tl-play" class="btn icon-btn play-btn" type="button" aria-label="Play" title="Play / pause (Space)">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path class="icon-play" d="M8 5.5v13L19 12z" fill="currentColor" />
+            <g class="icon-pause" fill="currentColor"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></g>
+          </svg>
+        </button>
+        <button id="tl-next" class="btn icon-btn" type="button" aria-label="Next rule" title="Next (→)">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8.5 5.8v12.4L17 12z" fill="currentColor"/></svg>
+        </button>
+        <button id="tl-end" class="btn icon-btn" type="button" aria-label="Jump to final state" title="Jump to final (End)">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M16 5h2v14h-2zM6 5.8v12.4L14.5 12z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <input id="tl-slider" class="timeline-slider" type="range" min="0" max="0" value="0" step="1" aria-label="Timeline position" />
+      <div class="timeline-status">
+        <span id="tl-step-label" class="tl-step-label">Initial state</span>
+        <code id="tl-rule-text" class="tl-rule-text"></code>
+      </div>
+    </footer>
+
+    <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+    <dialog id="import-dialog" class="import-dialog" aria-labelledby="import-title">
+      <h2 id="import-title">Import a folder tree</h2>
+      <p class="dialog-hint">
+        Paste the output of <code>tree /F</code> (Windows) or <code>tree</code> (Linux/macOS),
+        a plain list of paths — or drop / pick a text file.
+      </p>
+      <div class="drop-zone" id="drop-zone">
+        <textarea
+          id="import-text"
+          class="import-text"
+          placeholder="Paste tree output here, or drop a file…"
+          spellcheck="false"
+        ></textarea>
+      </div>
+      <div class="dialog-row">
+        <input type="file" id="import-file" accept=".txt,.text,text/plain" />
+        <span id="import-preview" class="import-preview" aria-live="polite"></span>
+      </div>
+      <div class="dialog-warnings" id="import-warnings"></div>
+      <div class="dialog-actions">
+        <button id="import-cancel" class="btn" type="button">Cancel</button>
+        <button id="import-apply" class="btn primary" type="button" disabled>Import</button>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/app.ts"></script>
+  </body>
+</html>

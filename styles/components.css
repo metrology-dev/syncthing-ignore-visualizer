@@ -1,0 +1,679 @@
+/* Component styles: tree SVG, legend, editor, diagnostics, explanation,
+   timeline details, tooltip, import dialog. */
+
+/* ---------- Folder tree ---------- */
+
+.tree-container {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  padding: 8px;
+}
+
+#tree-svg {
+  display: block;
+}
+
+.node .row-bg {
+  fill: transparent;
+  rx: 7px;
+  transition: fill var(--transition-state);
+}
+
+.node.included .row-bg {
+  fill: var(--state-included-bg);
+}
+
+.node.ignored .row-bg {
+  fill: var(--state-ignored-bg);
+}
+
+.node.dimmed {
+  opacity: 0.45;
+  transition: opacity var(--transition-state);
+}
+
+.node.matched-now .row-bg {
+  fill: var(--state-matched-bg);
+  stroke: var(--state-matched);
+  stroke-width: 1.5;
+}
+
+.node.decided-now .row-bg {
+  animation: flash 700ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes flash {
+  0% {
+    fill: var(--state-matched-bg);
+    stroke: var(--state-matched);
+  }
+  60% {
+    fill: var(--state-matched-bg);
+  }
+}
+
+.node text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  fill: var(--text);
+  dominant-baseline: middle;
+  cursor: pointer;
+  user-select: none;
+}
+
+.node.internal text {
+  font-style: italic;
+  fill: var(--text-soft);
+}
+
+.node .status-dot {
+  transition: fill var(--transition-state);
+  fill: transparent;
+}
+
+.node.included .status-dot {
+  fill: var(--state-included);
+}
+
+.node.ignored .status-dot {
+  fill: var(--state-ignored);
+}
+
+.node .caret {
+  fill: var(--text-soft);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.node .icon-folder {
+  fill: var(--primary);
+  opacity: 0.85;
+}
+
+.node .icon-file {
+  fill: none;
+  stroke: var(--text-soft);
+  stroke-width: 1.4;
+}
+
+.node .row-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.node:hover .row-bg {
+  stroke: var(--outline);
+  stroke-width: 1;
+}
+
+.node.selected .row-bg {
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.node .search-hit {
+  fill: var(--state-matched);
+  font-weight: 700;
+}
+
+.node.deletable .status-dot {
+  stroke: var(--state-matched);
+  stroke-width: 1.5;
+}
+
+/* ---------- Legend ---------- */
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--outline-soft);
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--text-soft);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.swatch-included {
+  background: var(--state-included);
+}
+
+.swatch-ignored {
+  background: var(--state-ignored);
+}
+
+.swatch-matched {
+  background: var(--state-matched);
+}
+
+.swatch-neutral {
+  background: var(--state-neutral);
+  opacity: 0.5;
+}
+
+.legend-note {
+  margin-left: auto;
+  font-style: italic;
+}
+
+/* ---------- Editor ---------- */
+
+.file-tabs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.tab:hover {
+  background: var(--surface-hover);
+}
+
+.tab.active {
+  background: var(--primary-container);
+  color: var(--text);
+}
+
+.tab .tab-close {
+  margin-left: 6px;
+  opacity: 0.7;
+}
+
+.editor-host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+
+.editor {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.editor-gutter {
+  padding: 8px 0 8px 8px;
+  text-align: right;
+  color: var(--text-soft);
+  background: var(--surface-variant);
+  user-select: none;
+  overflow: hidden;
+  width: 58px;
+  flex: none;
+}
+
+.gutter-line {
+  height: 20px;
+  padding-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 11.5px;
+}
+
+.gutter-line .diag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.diag-dot.error {
+  background: var(--error);
+}
+
+.diag-dot.warning {
+  background: var(--warning);
+}
+
+.diag-dot.info {
+  background: var(--info);
+}
+
+.gutter-line.current-rule {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.editor-scroll {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.editor-highlight,
+.editor-input {
+  margin: 0;
+  border: 0;
+  padding: 8px 12px;
+  font: inherit;
+  line-height: 20px;
+  white-space: pre;
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+}
+
+.editor-highlight {
+  pointer-events: none;
+  color: var(--text);
+  background: transparent;
+  z-index: 1;
+}
+
+.editor-input {
+  color: transparent;
+  caret-color: var(--primary);
+  background: transparent;
+  resize: none;
+  z-index: 2;
+  outline: none;
+}
+
+.editor-input::selection {
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.hl-line {
+  display: block;
+  height: 20px;
+}
+
+.hl-line.current-rule {
+  background: color-mix(in srgb, var(--state-matched) 16%, transparent);
+  border-radius: 4px;
+}
+
+.hl-line.dg-error {
+  text-decoration: underline wavy var(--error) 1px;
+  text-underline-offset: 4px;
+}
+
+.hl-line.dg-warning {
+  text-decoration: underline wavy var(--warning) 1px;
+  text-underline-offset: 4px;
+}
+
+.tok-comment {
+  color: var(--state-neutral);
+  font-style: italic;
+}
+
+.tok-prefix {
+  color: var(--info);
+  font-weight: 700;
+}
+
+.tok-wild {
+  color: var(--state-matched);
+  font-weight: 700;
+}
+
+.tok-root {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.tok-directive {
+  color: var(--info);
+  font-weight: 600;
+}
+
+.tok-string {
+  color: var(--state-included);
+}
+
+.tok-escape {
+  color: var(--text-soft);
+}
+
+.autocomplete {
+  position: absolute;
+  z-index: 5;
+  background: var(--surface-container);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-2);
+  min-width: 220px;
+  overflow: hidden;
+}
+
+.autocomplete button {
+  display: flex;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+  gap: 8px;
+  align-items: baseline;
+  text-align: left;
+}
+
+.autocomplete button.active,
+.autocomplete button:hover {
+  background: var(--surface-hover);
+}
+
+.autocomplete .ac-hint {
+  color: var(--text-soft);
+  font-size: 11.5px;
+}
+
+/* ---------- Diagnostics list ---------- */
+
+.diagnostics {
+  border-top: 1px solid var(--outline-soft);
+  max-height: 110px;
+  overflow: auto;
+  font-size: 12.5px;
+}
+
+.diagnostics:empty {
+  display: none;
+}
+
+.diag-row {
+  display: flex;
+  gap: 8px;
+  padding: 4px 12px;
+  align-items: baseline;
+  cursor: pointer;
+}
+
+.diag-row:hover {
+  background: var(--surface-hover);
+}
+
+.diag-row .diag-loc {
+  color: var(--text-soft);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.diag-row.error {
+  color: var(--error);
+}
+
+.diag-row.warning {
+  color: var(--warning);
+}
+
+.diag-row.info {
+  color: var(--info);
+}
+
+/* ---------- Explanation panel ---------- */
+
+.explain-content {
+  flex: 1;
+  overflow: auto;
+  padding: 14px;
+  min-height: 0;
+}
+
+.explain-content h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-soft);
+  margin: 14px 0 6px;
+}
+
+.explain-content h3:first-child {
+  margin-top: 0;
+}
+
+.rule-display {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--surface-variant);
+  border-radius: var(--radius-s);
+  padding: 8px 12px;
+  display: block;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.explain-text {
+  margin: 6px 0;
+  line-height: 1.55;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 2px 4px 2px 0;
+}
+
+.chip.included {
+  background: var(--state-included-bg);
+  color: var(--state-included);
+}
+
+.chip.ignored {
+  background: var(--state-ignored-bg);
+  color: var(--state-ignored);
+}
+
+.chip.neutral {
+  background: var(--surface-variant);
+  color: var(--text-soft);
+}
+
+.chip.matched {
+  background: var(--state-matched-bg);
+  color: var(--state-matched);
+}
+
+.path-list {
+  margin: 4px 0;
+  padding-left: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.path-list li {
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.path-list li:hover {
+  background: var(--surface-hover);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--outline-soft);
+  vertical-align: top;
+}
+
+.history-table th {
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.history-table code {
+  white-space: pre;
+}
+
+.history-table tr.applied {
+  background: var(--state-matched-bg);
+}
+
+.muted {
+  color: var(--text-soft);
+}
+
+.callout {
+  border-left: 3px solid var(--info);
+  background: var(--surface-variant);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  padding: 8px 12px;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.callout.warn {
+  border-left-color: var(--warning);
+}
+
+/* ---------- Timeline details ---------- */
+
+.play-btn .icon-pause {
+  display: none;
+}
+
+.timeline-bar.playing .icon-play {
+  display: none;
+}
+
+.timeline-bar.playing .icon-pause {
+  display: initial;
+}
+
+/* ---------- Tooltip ---------- */
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 380px;
+  background: var(--surface-container);
+  color: var(--text);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-2);
+  padding: 8px 10px;
+  font-size: 12.5px;
+  pointer-events: none;
+  line-height: 1.45;
+}
+
+.tooltip code {
+  font-size: 11.5px;
+}
+
+/* ---------- Import dialog ---------- */
+
+.import-dialog {
+  width: min(680px, 92vw);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-l);
+  background: var(--surface-container);
+  color: var(--text);
+  padding: 20px;
+  box-shadow: var(--shadow-2);
+}
+
+.import-dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.dialog-hint {
+  color: var(--text-soft);
+  margin: 8px 0 12px;
+}
+
+.drop-zone {
+  border: 2px dashed var(--outline);
+  border-radius: var(--radius-m);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.drop-zone.drag-over {
+  border-color: var(--primary);
+  background: var(--primary-container);
+}
+
+.import-text {
+  display: block;
+  width: 100%;
+  height: 220px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 10px;
+  resize: vertical;
+  outline: none;
+}
+
+.dialog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.import-preview {
+  color: var(--text-soft);
+}
+
+.dialog-warnings {
+  max-height: 110px;
+  overflow: auto;
+  color: var(--warning);
+  font-size: 12.5px;
+}
+
+.dialog-warnings:empty {
+  display: none;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
